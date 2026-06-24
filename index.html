@@ -1,0 +1,999 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Class 10 Stream Selection Quiz</title>
+  <meta name="description" content="A 50-question stream selection quiz to help Class 10 students choose Science, Commerce, or Humanities/Arts for Classes 11 and 12.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#116466">
+  <link rel="icon" href="logo.png">
+  <style>
+    :root {
+      --ink: #18212b;
+      --muted: #5f6d7a;
+      --paper: #f4f7f4;
+      --card: #ffffff;
+      --line: #d9e2dc;
+      --science: #116466;
+      --commerce: #b35c18;
+      --humanities: #4f5aa8;
+      --gold: #e3ad2b;
+      --rose: #c94f5f;
+      --shadow: 0 18px 45px rgba(24, 33, 43, .13);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, #edf5f0 0%, #f8faf7 42%, #eef3f8 100%);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button, input {
+      font: inherit;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .top {
+      padding: 18px clamp(16px, 4vw, 42px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      border-bottom: 1px solid rgba(24, 33, 43, .08);
+      background: rgba(255, 255, 255, .82);
+      backdrop-filter: blur(14px);
+      position: sticky;
+      top: 0;
+      z-index: 4;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand img {
+      width: 112px;
+      height: 60px;
+      object-fit: contain;
+      border-radius: 8px;
+      background: white;
+      border: 1px solid var(--line);
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 1rem;
+      line-height: 1.1;
+    }
+
+    .brand span {
+      display: block;
+      color: var(--muted);
+      font-size: .84rem;
+      margin-top: 3px;
+    }
+
+    .progress-wrap {
+      width: min(320px, 36vw);
+      height: 10px;
+      border-radius: 999px;
+      background: #dfe8e1;
+      overflow: hidden;
+      flex: 0 1 auto;
+    }
+
+    .progress {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--science), var(--gold), var(--humanities));
+      transition: width .25s ease;
+    }
+
+    .shell {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: clamp(22px, 4vw, 42px) 0 46px;
+      display: grid;
+      grid-template-columns: minmax(260px, .82fr) minmax(0, 1.18fr);
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .map-panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+
+    .headline {
+      display: grid;
+      gap: 10px;
+    }
+
+    .headline h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .headline p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+      max-width: 36rem;
+    }
+
+    .stream-board {
+      display: grid;
+      gap: 10px;
+    }
+
+    .stream-tile {
+      min-height: 82px;
+      border: 1px solid var(--line);
+      border-left: 8px solid var(--tile-color);
+      border-radius: 8px;
+      padding: 14px;
+      background:
+        linear-gradient(90deg, color-mix(in srgb, var(--tile-color) 14%, white), white 64%);
+      display: grid;
+      gap: 4px;
+    }
+
+    .stream-tile b {
+      font-size: 1rem;
+    }
+
+    .stream-tile span {
+      color: var(--muted);
+      font-size: .92rem;
+      line-height: 1.35;
+    }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .mini-stat {
+      min-height: 70px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfb;
+    }
+
+    .mini-stat strong {
+      display: block;
+      font-size: 1.25rem;
+    }
+
+    .mini-stat span {
+      color: var(--muted);
+      font-size: .82rem;
+    }
+
+    .panel {
+      min-height: 640px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .92);
+      box-shadow: var(--shadow);
+      padding: clamp(18px, 3vw, 34px);
+      display: grid;
+      align-content: center;
+    }
+
+    .start,
+    .quiz,
+    .results {
+      display: none;
+    }
+
+    .start.active,
+    .quiz.active,
+    .results.active {
+      display: grid;
+      gap: 20px;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    label {
+      font-weight: 750;
+      font-size: .9rem;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 13px 14px;
+      background: white;
+      color: var(--ink);
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--science);
+      box-shadow: 0 0 0 3px rgba(17, 100, 102, .16);
+    }
+
+    .question-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--muted);
+      font-weight: 750;
+    }
+
+    .question {
+      margin: 0;
+      font-size: clamp(1.42rem, 3vw, 2.18rem);
+      line-height: 1.16;
+      letter-spacing: 0;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .option {
+      min-height: 94px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfb;
+      color: var(--ink);
+      cursor: pointer;
+      text-align: left;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: transform .16s ease, border-color .16s ease, background .16s ease;
+    }
+
+    .option:hover {
+      transform: translateY(-2px);
+      border-color: rgba(17, 100, 102, .42);
+      background: #f5faf6;
+    }
+
+    .option.selected {
+      border-color: var(--science);
+      background: #e8f4ef;
+    }
+
+    .marker {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      font-weight: 850;
+      color: white;
+      background: var(--science);
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .test-tools {
+      display: none !important;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      margin-top: 6px;
+    }
+
+    body.test-mode .test-tools {
+      display: grid !important;
+    }
+
+    .test-tools select {
+      width: 100%;
+      min-height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      color: var(--ink);
+      padding: 0 12px;
+      font: inherit;
+    }
+
+    .btn {
+      min-height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      color: var(--ink);
+      font-weight: 800;
+      padding: 0 18px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn.primary {
+      border-color: var(--science);
+      background: var(--science);
+      color: white;
+    }
+
+    .btn:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    .result-hero {
+      display: grid;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .student-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .student-line span {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 10px;
+      color: var(--muted);
+      background: #fbfcfb;
+      font-size: .88rem;
+    }
+
+    .result-hero h2 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.35rem);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .result-hero p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .score-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .score-row {
+      display: grid;
+      gap: 7px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 13px;
+      background: #fbfcfb;
+    }
+
+    .score-row span {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-weight: 800;
+    }
+
+    .bar {
+      height: 12px;
+      border-radius: 999px;
+      background: #e4ebe6;
+      overflow: hidden;
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      width: var(--w);
+      border-radius: inherit;
+      background: var(--c);
+    }
+
+    .advice-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .advice {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: white;
+    }
+
+    .advice h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+    }
+
+    .advice p,
+    .advice ul {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: .94rem;
+    }
+
+    .advice ul {
+      padding-left: 18px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 860px) {
+      .top {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .progress-wrap {
+        width: 100%;
+      }
+
+      .shell {
+        grid-template-columns: 1fr;
+      }
+
+      .panel {
+        min-height: auto;
+      }
+
+      .options,
+      .advice-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .mini-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .actions,
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="top">
+      <div class="brand">
+        <img src="logo.png" alt="">
+        <div>
+          <strong>Class 10 Stream Finder</strong>
+          <span>Science, Commerce, Humanities/Arts</span>
+        </div>
+      </div>
+      <div class="progress-wrap" aria-hidden="true"><div class="progress" id="progress"></div></div>
+    </header>
+
+    <main class="shell">
+      <aside class="map-panel">
+        <div class="headline">
+          <h1>Choose your next path.</h1>
+          <p>A focused quiz for Class 10 students preparing for Classes 11 and 12 stream selection.</p>
+        </div>
+
+        <div class="stream-board" aria-label="Streams">
+          <div class="stream-tile" style="--tile-color: var(--science)">
+            <b>Science</b>
+            <span>Maths, biology, technology, medicine, engineering, research, data, and lab-based learning.</span>
+          </div>
+          <div class="stream-tile" style="--tile-color: var(--commerce)">
+            <b>Commerce</b>
+            <span>Business, accounts, economics, finance, entrepreneurship, markets, and management.</span>
+          </div>
+          <div class="stream-tile" style="--tile-color: var(--humanities)">
+            <b>Humanities/Arts</b>
+            <span>Law, psychology, design, media, civil services, literature, society, and public life.</span>
+          </div>
+        </div>
+
+        <div class="mini-grid" aria-label="Quiz details">
+          <div class="mini-stat"><strong>50</strong><span>questions</span></div>
+          <div class="mini-stat"><strong>3</strong><span>streams</span></div>
+          <div class="mini-stat"><strong>1</strong><span>report</span></div>
+        </div>
+      </aside>
+
+      <section class="panel" aria-live="polite">
+        <div class="start active" id="start">
+          <div class="headline">
+            <h1>Stream selection quiz</h1>
+            <p>For students deciding between Science, Commerce, and Humanities/Arts after Class 10.</p>
+          </div>
+          <form class="form-grid" id="studentForm">
+            <div class="field">
+              <label for="studentName">Student name</label>
+              <input id="studentName" name="studentName" autocomplete="name" required>
+            </div>
+            <div class="field">
+              <label for="studentClass">Class / section</label>
+              <input id="studentClass" name="studentClass" value="Class 10" required>
+            </div>
+            <button class="btn primary" type="submit">Start quiz</button>
+          </form>
+          <div class="test-tools" id="testTools" aria-label="Admin test tools">
+            <select id="testStreamSelect">
+              <option value="science">Science result</option>
+              <option value="commerce">Commerce result</option>
+              <option value="humanities">Humanities/Arts result</option>
+            </select>
+            <button class="btn" type="button" id="runTestBtn">Run test</button>
+          </div>
+        </div>
+
+        <div class="quiz" id="quiz">
+          <div class="question-head">
+            <span id="sectionName">Question</span>
+            <span id="counter">1 / 50</span>
+          </div>
+          <h2 class="question" id="questionText"></h2>
+          <div class="options" id="options"></div>
+          <div class="actions">
+            <button class="btn" type="button" id="backBtn">Back</button>
+            <button class="btn primary" type="button" id="nextBtn" disabled>Next</button>
+          </div>
+        </div>
+
+        <div class="results" id="results"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const streams = {
+      science: {
+        title: "Science",
+        color: "#116466",
+        summary: "Best suited when curiosity about maths, biology, technology, experiments, healthcare, data, or engineering is consistently strong.",
+        subjects: ["Physics", "Chemistry", "Maths", "Biology", "Computer Science"],
+        nextSteps: ["Compare PCM, PCB, and PCMB carefully.", "Speak with science teachers about workload.", "Try one practical project in maths, biology, or technology."]
+      },
+      commerce: {
+        title: "Commerce",
+        color: "#b35c18",
+        summary: "Best suited when business, money, accounts, economics, markets, entrepreneurship, and organized decision-making feel natural.",
+        subjects: ["Accountancy", "Business Studies", "Economics", "Maths", "Entrepreneurship"],
+        nextSteps: ["Check whether Maths is required for your target colleges.", "Try a budgeting, business, or stock-market simulation.", "Talk to a Commerce student about accounts and economics."]
+      },
+      humanities: {
+        title: "Humanities/Arts",
+        color: "#4f5aa8",
+        summary: "Best suited when society, people, writing, law, psychology, media, design, public service, and communication stand out.",
+        subjects: ["History", "Political Science", "Psychology", "Sociology", "Economics", "Fine Arts"],
+        nextSteps: ["Explore subject combinations offered by your school.", "Try writing, debate, design, research, or volunteering activities.", "Speak with seniors about law, civil services, media, psychology, or design paths."]
+      }
+    };
+
+    const questions = [
+      { text: "I enjoy solving maths problems where there is a clear method and a correct answer.", mr: "मला स्पष्ट पद्धत आणि बरोबर उत्तर असलेली गणिताची उदाहरणे सोडवायला आवडतात.", scores: { science: 3, commerce: 2 } },
+      { text: "Topics like the human body, medicine, nutrition, or health catch my attention.", mr: "मानवी शरीर, औषध, पोषण किंवा आरोग्य यांसारखे विषय माझे लक्ष वेधून घेतात.", scores: { science: 3, humanities: 1 } },
+      { text: "I like understanding society, culture, history, politics, or human behaviour.", mr: "मला समाज, संस्कृती, इतिहास, राजकारण किंवा मानवी वर्तन समजून घ्यायला आवडते.", scores: { humanities: 3 } },
+      { text: "I am curious about how businesses earn profit, set prices, and manage customers.", mr: "व्यवसाय नफा कसा कमावतात, किंमती कशा ठरवतात आणि ग्राहक कसे सांभाळतात याबद्दल मला कुतूहल आहे.", scores: { commerce: 3 } },
+      { text: "Experiments, observations, measurements, and lab work sound interesting to me.", mr: "प्रयोग, निरीक्षणे, मोजमापे आणि प्रयोगशाळेतील काम मला रोचक वाटते.", scores: { science: 3 } },
+      { text: "I am comfortable expressing my views through writing, speaking, debate, or discussion.", mr: "लेखन, बोलणे, वादविवाद किंवा चर्चेद्वारे माझे विचार मांडणे मला सोयीचे वाटते.", scores: { humanities: 3, commerce: 1 } },
+      { text: "I like tracking money, budgets, bills, transactions, or organized financial records.", mr: "पैसे, बजेट, बिले, व्यवहार किंवा नीटनेटके आर्थिक रेकॉर्ड ठेवणे मला आवडते.", scores: { commerce: 3 } },
+      { text: "Technology, coding, machines, gadgets, or how systems work make me curious.", mr: "तंत्रज्ञान, कोडिंग, यंत्रे, गॅजेट्स किंवा प्रणाली कशा काम करतात याबद्दल मला कुतूहल वाटते.", scores: { science: 3, commerce: 1 } },
+      { text: "News about inflation, jobs, markets, taxes, or the economy makes me think.", mr: "महागाई, नोकऱ्या, बाजारपेठा, कर किंवा अर्थव्यवस्थेबद्दलच्या बातम्या मला विचार करायला लावतात.", scores: { commerce: 2, humanities: 2 } },
+      { text: "I enjoy understanding why people behave differently in different situations.", mr: "वेगवेगळ्या परिस्थितीत लोक वेगवेगळे का वागतात हे समजून घेणे मला आवडते.", scores: { humanities: 3 } },
+      { text: "Charts, tables, data, and patterns are easier for me to understand than long descriptions.", mr: "लांब वर्णनांपेक्षा चार्ट, तक्ते, माहिती आणि नमुने मला समजायला सोपे वाटतात.", scores: { commerce: 2, science: 2 } },
+      { text: "I care about environmental problems and want to understand their scientific and social causes.", mr: "मला पर्यावरणीय समस्यांची काळजी आहे आणि त्यांची वैज्ञानिक व सामाजिक कारणे समजून घ्यायची आहेत.", scores: { science: 2, humanities: 2 } },
+      { text: "Rules, rights, justice, law, or public policy are topics I would like to explore.", mr: "नियम, हक्क, न्याय, कायदा किंवा सार्वजनिक धोरण हे विषय मला जाणून घ्यायला आवडतील.", scores: { humanities: 3 } },
+      { text: "I like the idea of planning a product, finding buyers, and growing a small business.", mr: "एखादे उत्पादन नियोजित करणे, खरेदीदार शोधणे आणि छोटा व्यवसाय वाढवणे ही कल्पना मला आवडते.", scores: { commerce: 3 } },
+      { text: "I can imagine studying seriously for careers connected with medicine, research, or healthcare.", mr: "वैद्यक, संशोधन किंवा आरोग्यसेवा यांच्याशी संबंधित करिअरसाठी गंभीरपणे अभ्यास करणे मी कल्पना करू शकतो/शकते.", scores: { science: 3 } },
+      { text: "Design, media, content, performance, or visual communication feels exciting to me.", mr: "डिझाइन, मीडिया, कंटेंट, सादरीकरण किंवा दृश्य संवाद मला उत्साहवर्धक वाटतो.", scores: { humanities: 3, commerce: 1 } },
+      { text: "Building models, understanding structures, or solving engineering-style problems interests me.", mr: "मॉडेल बनवणे, रचना समजून घेणे किंवा अभियांत्रिकी प्रकारच्या समस्या सोडवणे मला आवडते.", scores: { science: 3 } },
+      { text: "Banking, investment, savings, finance, or financial planning sounds useful to learn.", mr: "बँकिंग, गुंतवणूक, बचत, वित्त किंवा आर्थिक नियोजन शिकणे उपयुक्त वाटते.", scores: { commerce: 3 } },
+      { text: "Literature, languages, stories, speeches, or essays feel meaningful to me.", mr: "साहित्य, भाषा, कथा, भाषणे किंवा निबंध मला अर्थपूर्ण वाटतात.", scores: { humanities: 3 } },
+      { text: "I can stay patient with formulas, calculations, and repeated practice.", mr: "सूत्रे, गणना आणि वारंवार सराव करताना मी संयम ठेवू शकतो/शकते.", scores: { science: 2, commerce: 2 } },
+      { text: "I like leading events, organizing people, and handling responsibilities in a group.", mr: "कार्यक्रमांचे नेतृत्व करणे, लोकांना संघटित करणे आणि गटात जबाबदाऱ्या सांभाळणे मला आवडते.", scores: { commerce: 2, humanities: 2 } },
+      { text: "I do not mind reading long chapters if the topic helps me understand the world better.", mr: "एखादा विषय जग अधिक चांगले समजून घेण्यास मदत करत असेल तर लांब धडे वाचायला मला हरकत नाही.", scores: { humanities: 2, science: 1 } },
+      { text: "Accuracy, safety, and careful step-by-step work matter to me in practical tasks.", mr: "प्रत्यक्ष कामांमध्ये अचूकता, सुरक्षितता आणि काळजीपूर्वक टप्प्याटप्प्याने काम करणे मला महत्त्वाचे वाटते.", scores: { science: 3, commerce: 1 } },
+      { text: "Presenting ideas clearly and convincing people feels like a strength I can build.", mr: "कल्पना स्पष्टपणे मांडणे आणि लोकांना पटवून देणे ही मी विकसित करू शकणारी ताकद वाटते.", scores: { commerce: 2, humanities: 2 } },
+      { text: "Maps, geography, development, communities, or social change interest me.", mr: "नकाशे, भूगोल, विकास, समुदाय किंवा सामाजिक बदल यांत मला रस आहे.", scores: { humanities: 3 } },
+      { text: "Computer tools, automation, AI, or digital work feel worth learning deeply.", mr: "कंप्युटर साधने, ऑटोमेशन, AI किंवा डिजिटल काम सखोलपणे शिकण्यासारखे वाटते.", scores: { science: 2, commerce: 2 } },
+      { text: "Civil services, public administration, social work, or helping communities appeals to me.", mr: "नागरी सेवा, सार्वजनिक प्रशासन, सामाजिक कार्य किंवा समुदायांना मदत करणे मला आकर्षक वाटते.", scores: { humanities: 3 } },
+      { text: "I like thinking about supply, demand, delivery, shops, customers, and operations.", mr: "पुरवठा, मागणी, डिलिव्हरी, दुकाने, ग्राहक आणि कामकाज याबद्दल विचार करणे मला आवडते.", scores: { commerce: 3 } },
+      { text: "Agriculture, food, animals, environment, or life sciences sound like areas I could study.", mr: "शेती, अन्न, प्राणी, पर्यावरण किंवा जीवशास्त्र ही क्षेत्रे मी अभ्यासू शकतो/शकते असे वाटते.", scores: { science: 3, humanities: 1 } },
+      { text: "Politics, current affairs, government decisions, and public problems interest me.", mr: "राजकारण, चालू घडामोडी, सरकारी निर्णय आणि सार्वजनिक समस्या यांत मला रस आहे.", scores: { humanities: 3 } },
+      { text: "I enjoy using numbers to make predictions or compare choices.", mr: "भाकीत करण्यासाठी किंवा पर्यायांची तुलना करण्यासाठी आकडे वापरणे मला आवडते.", scores: { commerce: 2, science: 2 } },
+      { text: "I prefer practical projects where I test ideas instead of only memorizing answers.", mr: "फक्त उत्तरे पाठ करण्यापेक्षा कल्पना तपासता येतील असे प्रत्यक्ष प्रकल्प मला जास्त आवडतात.", scores: { science: 2, commerce: 1, humanities: 1 } },
+      { text: "Teaching, counselling, psychology, or guiding people sounds meaningful to me.", mr: "शिक्षण, समुपदेशन, मानसशास्त्र किंवा लोकांना मार्गदर्शन करणे मला अर्थपूर्ण वाटते.", scores: { humanities: 3 } },
+      { text: "Accountancy, transactions, balance sheets, or business records sound learnable to me.", mr: "अकाउंटन्सी, व्यवहार, बॅलन्स शीट्स किंवा व्यवसाय रेकॉर्ड शिकता येण्यासारखे वाटतात.", scores: { commerce: 3 } },
+      { text: "Electricity, motion, forces, space, or scientific laws make me curious.", mr: "वीज, गती, बल, अवकाश किंवा वैज्ञानिक नियम यांबद्दल मला कुतूहल वाटते.", scores: { science: 3 } },
+      { text: "Hospitality, tourism, media, events, or public-facing work sounds appealing.", mr: "आतिथ्य, पर्यटन, मीडिया, कार्यक्रम किंवा लोकांशी थेट संबंध येणारे काम आकर्षक वाटते.", scores: { humanities: 2, commerce: 2 } },
+      { text: "I like comparing brands, advertisements, customer choices, and business strategies.", mr: "ब्रँड, जाहिराती, ग्राहकांचे पर्याय आणि व्यवसाय धोरणांची तुलना करणे मला आवडते.", scores: { commerce: 3 } },
+      { text: "Science videos, research discoveries, or explanations of natural phenomena hold my attention.", mr: "विज्ञान व्हिडिओ, संशोधनातील शोध किंवा नैसर्गिक घटनांची स्पष्टीकरणे माझे लक्ष धरून ठेवतात.", scores: { science: 3 } },
+      { text: "I enjoy discussing complex social issues where there may be more than one correct view.", mr: "जटिल सामाजिक विषयांवर चर्चा करणे मला आवडते, जिथे एकापेक्षा अधिक योग्य दृष्टिकोन असू शकतात.", scores: { humanities: 3 } },
+      { text: "Neat records, organized files, deadlines, and careful documentation suit my working style.", mr: "नीटनेटके रेकॉर्ड, व्यवस्थित फाइल्स, अंतिम मुदती आणि काळजीपूर्वक दस्तऐवजीकरण माझ्या कामाच्या पद्धतीला शोभते.", scores: { commerce: 3 } },
+      { text: "Robotics, electronics, apps, or technical problem-solving feels exciting to explore.", mr: "रोबोटिक्स, इलेक्ट्रॉनिक्स, अॅप्स किंवा तांत्रिक समस्या सोडवणे शोधून पाहणे मला उत्साहवर्धक वाटते.", scores: { science: 3 } },
+      { text: "Negotiation, customer needs, sales, or managing a team sounds interesting.", mr: "वाटाघाटी, ग्राहकांच्या गरजा, विक्री किंवा टीमचे व्यवस्थापन करणे रोचक वाटते.", scores: { commerce: 3, humanities: 1 } },
+      { text: "Philosophy, culture, art, society, or human values feel important to study.", mr: "तत्त्वज्ञान, संस्कृती, कला, समाज किंवा मानवी मूल्ये अभ्यासणे महत्त्वाचे वाटते.", scores: { humanities: 3 } },
+      { text: "Logical puzzles and mental calculations are activities I usually enjoy.", mr: "तार्किक कोडी आणि मनातल्या मनात गणना करणे या गोष्टी मला साधारणपणे आवडतात.", scores: { science: 2, commerce: 2 } },
+      { text: "I am willing to take a demanding study path if it leads to technical or medical careers.", mr: "तांत्रिक किंवा वैद्यकीय करिअरकडे नेणारा अभ्यास कठीण असला तरी तो स्वीकारण्याची माझी तयारी आहे.", scores: { science: 3 } },
+      { text: "I can imagine preparing for CA, BBA, management, economics, finance, or business careers.", mr: "CA, BBA, व्यवस्थापन, अर्थशास्त्र, वित्त किंवा व्यवसाय क्षेत्रातील करिअरसाठी तयारी करणे मी कल्पना करू शकतो/शकते.", scores: { commerce: 3 } },
+      { text: "I can imagine preparing for law, psychology, civil services, media, design, or social science careers.", mr: "कायदा, मानसशास्त्र, नागरी सेवा, मीडिया, डिझाइन किंवा सामाजिक विज्ञानातील करिअरसाठी तयारी करणे मी कल्पना करू शकतो/शकते.", scores: { humanities: 3 } },
+      { text: "My interests are balanced, and I want a stream that keeps multiple future options open.", mr: "माझे रस संतुलित आहेत आणि भविष्यात अनेक पर्याय खुले ठेवणारी शाखा मला हवी आहे.", scores: { science: 1, commerce: 1, humanities: 1 } },
+      { text: "A family business, startup idea, or independent venture is something I may want to build.", mr: "कौटुंबिक व्यवसाय, स्टार्टअपची कल्पना किंवा स्वतंत्र उपक्रम उभारण्याची माझी इच्छा असू शकते.", scores: { commerce: 3 } },
+      { text: "Helping people through health, education, law, counselling, or public service feels important to me.", mr: "आरोग्य, शिक्षण, कायदा, समुपदेशन किंवा सार्वजनिक सेवेद्वारे लोकांना मदत करणे मला महत्त्वाचे वाटते.", scores: { humanities: 2, science: 2 } }
+    ];
+
+    const responseOptions = [
+      { label: "Strongly agree", value: 3, marker: "A" },
+      { label: "Agree", value: 2, marker: "B" },
+      { label: "Not sure", value: 1, marker: "C" },
+      { label: "Not interested", value: 0, marker: "D" }
+    ];
+
+    const ADMIN_GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMuKUZnUe0SrXXQiJXfiFiKOO6EYv2l0R9i1pv1ffvUGF0_UnlDseHGtaYI6g3XCer/exec";
+    const isTestMode = new URLSearchParams(window.location.search).has("test");
+    document.body.classList.toggle("test-mode", isTestMode);
+
+    const start = document.getElementById("start");
+    const quiz = document.getElementById("quiz");
+    const results = document.getElementById("results");
+    const form = document.getElementById("studentForm");
+    const studentName = document.getElementById("studentName");
+    const studentClass = document.getElementById("studentClass");
+    const progress = document.getElementById("progress");
+    const sectionName = document.getElementById("sectionName");
+    const counter = document.getElementById("counter");
+    const questionText = document.getElementById("questionText");
+    const optionsEl = document.getElementById("options");
+    const backBtn = document.getElementById("backBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const testStreamSelect = document.getElementById("testStreamSelect");
+    const runTestBtn = document.getElementById("runTestBtn");
+
+    let current = 0;
+    let answers = Array(questions.length).fill(null);
+    let student = null;
+    let submissionId = null;
+    let lastSaveStatus = "saved on this device";
+    let skipOnlineSave = false;
+
+    function showView(view) {
+      start.classList.toggle("active", view === "start");
+      quiz.classList.toggle("active", view === "quiz");
+      results.classList.toggle("active", view === "results");
+    }
+
+    function renderQuestion() {
+      const question = questions[current];
+      sectionName.textContent = "Question";
+      counter.textContent = `${current + 1} / ${questions.length}`;
+      progress.style.width = `${(current / questions.length) * 100}%`;
+      questionText.textContent = `${question.text} (${question.mr})`;
+      backBtn.disabled = current === 0;
+      nextBtn.disabled = answers[current] === null;
+      nextBtn.textContent = current === questions.length - 1 ? "See result" : "Next";
+      optionsEl.innerHTML = responseOptions.map((option, index) => {
+        const selected = answers[current] === index ? " selected" : "";
+        return `<button class="option${selected}" type="button" data-index="${index}">
+          <span class="marker">${option.marker}</span>
+          <strong>${option.label}</strong>
+        </button>`;
+      }).join("");
+    }
+
+    function calculateScores() {
+      const totals = { science: 0, commerce: 0, humanities: 0 };
+      answers.forEach((answerIndex, questionIndex) => {
+        if (answerIndex === null) return;
+        const multiplier = responseOptions[answerIndex].value;
+        Object.entries(questions[questionIndex].scores).forEach(([stream, value]) => {
+          totals[stream] += value * multiplier;
+        });
+      });
+      return totals;
+    }
+
+    function calculatePercentages(sorted) {
+      const total = sorted.reduce((sum, item) => sum + item.score, 0);
+      if (!total) return sorted.map((item, index) => ({ ...item, percentage: index === 0 ? 34 : 33 }));
+      const raw = sorted.map((item) => ({ ...item, raw: (item.score / total) * 100 }));
+      const withFloors = raw.map((item) => ({ ...item, percentage: Math.floor(item.raw) }));
+      let remaining = 100 - withFloors.reduce((sum, item) => sum + item.percentage, 0);
+      withFloors
+        .map((item, index) => ({ index, fraction: item.raw - Math.floor(item.raw) }))
+        .sort((a, b) => b.fraction - a.fraction)
+        .forEach(({ index }) => {
+          if (remaining > 0) {
+            withFloors[index].percentage += 1;
+            remaining -= 1;
+          }
+        });
+      return withFloors.map(({ raw, ...item }) => item);
+    }
+
+    function getResultNote(sorted) {
+      const gap = sorted[0].score - sorted[1].score;
+      if (gap <= 8) {
+        return `Your top two streams are close: ${streams[sorted[0].key].title} and ${streams[sorted[1].key].title}. Compare subject combinations, workload, and school availability before deciding.`;
+      }
+      return streams[sorted[0].key].summary;
+    }
+
+    function saveLocalSubmission(record) {
+      const saved = JSON.parse(localStorage.getItem("class10StreamQuizSubmissions") || "[]");
+      const existingIndex = saved.findIndex((entry) => entry.id === record.id);
+      if (existingIndex >= 0) {
+        saved[existingIndex] = record;
+      } else {
+        saved.push(record);
+      }
+      localStorage.setItem("class10StreamQuizSubmissions", JSON.stringify(saved));
+    }
+
+    function isOnlineSaveConfigured() {
+      return ADMIN_GOOGLE_APPS_SCRIPT_URL.startsWith("https://script.google.com/macros/s/");
+    }
+
+    async function saveOnlineSubmission(record) {
+      if (skipOnlineSave) {
+        lastSaveStatus = "test result only; not saved online";
+        return;
+      }
+
+      if (!isOnlineSaveConfigured()) {
+        lastSaveStatus = "saved on this device";
+        return;
+      }
+
+      try {
+        await fetch(ADMIN_GOOGLE_APPS_SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          credentials: "include",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify(record)
+        });
+        lastSaveStatus = "saved successfully";
+      } catch (error) {
+        submitOnlineSaveForm(record);
+        lastSaveStatus = "sent to admin sheet";
+        console.warn("Google Sheets fetch save failed, used form fallback:", error);
+      }
+    }
+
+    function submitOnlineSaveForm(record) {
+      const frameName = `sheet-save-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      const iframe = document.createElement("iframe");
+      iframe.name = frameName;
+      iframe.style.display = "none";
+
+      const formEl = document.createElement("form");
+      formEl.method = "POST";
+      formEl.action = ADMIN_GOOGLE_APPS_SCRIPT_URL;
+      formEl.target = frameName;
+      formEl.style.display = "none";
+
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = "payload";
+      input.value = JSON.stringify(record);
+
+      formEl.appendChild(input);
+      document.body.appendChild(iframe);
+      document.body.appendChild(formEl);
+      formEl.submit();
+
+      setTimeout(() => {
+        formEl.remove();
+        iframe.remove();
+      }, 5000);
+    }
+
+    async function saveSubmission(sorted) {
+      const submittedAt = new Date();
+      submissionId = submissionId || `class10-submission-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      const record = {
+        id: submissionId,
+        studentName: student.name,
+        class: student.className,
+        stream: streams[sorted[0].key].title,
+        startedAt: student.startedAt,
+        submittedAt: submittedAt.toISOString(),
+        submittedAtDisplay: submittedAt.toLocaleString(),
+        topMatches: sorted.map((item) => ({
+          cluster: streams[item.key].title,
+          score: item.score,
+          percentage: item.percentage
+        })),
+        scores: Object.fromEntries(sorted.map((item) => [streams[item.key].title, item.score]))
+      };
+
+      saveLocalSubmission(record);
+      lastSaveStatus = "saved on this device";
+      await saveOnlineSubmission(record);
+    }
+
+    async function renderResults() {
+      const totals = calculateScores();
+      const sorted = calculatePercentages(Object.entries(totals)
+        .map(([key, score]) => ({ key, score }))
+        .sort((a, b) => b.score - a.score));
+      const top = sorted[0];
+      const topStream = streams[top.key];
+      await saveSubmission(sorted);
+      progress.style.width = "100%";
+      showView("results");
+
+      results.innerHTML = `
+        <div class="result-hero">
+          <div class="student-line">
+            <span>Name: ${student.name}</span>
+            <span>${student.className}</span>
+            <span>Data: ${lastSaveStatus}</span>
+          </div>
+          <h2>${topStream.title}</h2>
+          <p>${getResultNote(sorted)}</p>
+        </div>
+
+        <div class="score-list">
+          ${sorted.map((item) => {
+            const stream = streams[item.key];
+            const width = Math.max(8, item.percentage);
+            return `<div class="score-row">
+              <span><b>${stream.title}</b><b>${item.percentage}%</b></span>
+              <div class="bar"><i style="--w:${width}%;--c:${stream.color}"></i></div>
+            </div>`;
+          }).join("")}
+        </div>
+
+        <div class="advice-grid">
+          <article class="advice">
+            <h3>Subjects to explore</h3>
+            <ul>${topStream.subjects.map((subject) => `<li>${subject}</li>`).join("")}</ul>
+          </article>
+          <article class="advice">
+            <h3>Next steps</h3>
+            <ul>${topStream.nextSteps.map((step) => `<li>${step}</li>`).join("")}</ul>
+          </article>
+        </div>
+
+        <div class="actions">
+          <button class="btn" type="button" id="reviewBtn">Review answers</button>
+          <button class="btn" type="button" id="printBtn">Print report</button>
+          <button class="btn primary" type="button" id="restartBtn">Restart</button>
+        </div>
+      `;
+
+      document.getElementById("reviewBtn").addEventListener("click", () => {
+        current = 0;
+        showView("quiz");
+        renderQuestion();
+      });
+      document.getElementById("printBtn").addEventListener("click", () => window.print());
+      document.getElementById("restartBtn").addEventListener("click", () => {
+        current = 0;
+        answers = Array(questions.length).fill(null);
+        student = null;
+        submissionId = null;
+        lastSaveStatus = "saved on this device";
+        form.reset();
+        studentClass.value = "Class 10";
+        progress.style.width = "0%";
+        showView("start");
+      });
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      skipOnlineSave = false;
+      student = {
+        name: studentName.value.trim(),
+        className: studentClass.value.trim(),
+        startedAt: new Date().toISOString()
+      };
+      if (!student.name || !student.className) return;
+      current = 0;
+      answers = Array(questions.length).fill(null);
+      showView("quiz");
+      renderQuestion();
+    });
+
+    function runAdminTest(targetStream) {
+      skipOnlineSave = true;
+      student = {
+        name: `Admin ${streams[targetStream].title} Test`,
+        className: "Class 10",
+        startedAt: new Date().toISOString()
+      };
+      submissionId = `class10-test-${targetStream}-${Date.now()}`;
+      answers = questions.map((question) => {
+        const targetWeight = question.scores[targetStream] || 0;
+        const highestWeight = Math.max(...Object.values(question.scores));
+        if (targetWeight === highestWeight && targetWeight > 0) return 0;
+        if (targetWeight > 0) return 1;
+        return 3;
+      });
+      current = questions.length - 1;
+      renderResults();
+    }
+
+    runTestBtn.addEventListener("click", () => {
+      runAdminTest(testStreamSelect.value);
+    });
+
+    optionsEl.addEventListener("click", (event) => {
+      const button = event.target.closest(".option");
+      if (!button) return;
+      answers[current] = Number(button.dataset.index);
+      renderQuestion();
+    });
+
+    backBtn.addEventListener("click", () => {
+      if (current === 0) return;
+      current -= 1;
+      renderQuestion();
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (answers[current] === null) return;
+      if (current === questions.length - 1) {
+        renderResults();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    });
+  </script>
+</body>
+</html>
